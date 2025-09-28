@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+source scripts/network_sim/common
+
+# ========= args
+SIZE="${1:-1000000}" # 1MB
+# ========= args
+
+echo "\n[-] --- Starting run: requesting $SIZE download ---"
+
+# Debug connection
+# ip netns exec $NS_S1 tcpdump -i any -n &
+# ip netns exec $NS_C1 ping $IP_S1_EG -c 10
+# Debug connection
+
+echo "[-] Run server"
+NS_SERVER="ip netns exec $NS_S1"
+sudo $NS_SERVER ./target/debug/async-http3-server --address 0.0.0.0:$PORT_S1 --qlog-dir qlogdir &
+
+echo "[-] Run client"
+SERVER_IP=$IP_S1_EG
+NS_CLIENT="ip netns exec $NS_C1"
+RUST_LOG=info $NS_CLIENT ./target/debug/quiche-client https://test.com/stream-bytes/$SIZE --no-verify --connect-to $SERVER_IP:$PORT_S1

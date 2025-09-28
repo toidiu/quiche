@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "apps",
+  "apps_async",
   "buffer-pool",
   "datagram-socket",
   "h3i",

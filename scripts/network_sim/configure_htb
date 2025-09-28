@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+
+source scripts/network_sim/common
+
+set_htb() {
+  NSNAME=$1
+  DEVNAME=$2
+  RATE=$3
+  QUEUE=$4
+
+  # tc -n $NSNAME qdisc del dev $DEVNAME root
+
+  tc -n $NSNAME qdisc add dev $DEVNAME root handle 1: htb default 99
+  if [ $? -ne 0 ]; then
+    exit $?
+  fi
+
+  tc -n $NSNAME class add dev $DEVNAME parent 1: classid 1:99 htb quantum 1514 rate $RATE ceil $RATE
+  if [ $? -ne 0 ]; then
+    exit $?
+  fi
+
+  tc -n $NSNAME qdisc add dev $DEVNAME parent 1:99 handle 99: $QUEUE
+  if [ $? -ne 0 ]; then
+    exit $?
+  fi
+}
+
+set_htb $NS_M1 $VETH_M1_M2 "5mbit" "pfifo limit 10800"
+set_htb $NS_M3 $VETH_M3_M2 "5mbit" "pfifo limit 10800"

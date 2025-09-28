@@ -24,9 +24,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-mod args;
-mod body;
-mod server;
+use quiche_apps_async::args;
+use quiche_apps_async::server;
 
 use crate::args::Args;
 use crate::server::service_fn;
@@ -57,10 +56,18 @@ async fn main() {
     let socket = UdpSocket::bind(&args.address)
         .await
         .expect("UDP socket should be bindable");
+
+    let mut quic_settings = QuicSettings::default();
+    if let Some(qlog_dir) = args.qlog_dir {
+        quic_settings.qlog_dir = Some(qlog_dir);
+    }
+
+    quic_settings.cc_algorithm = args.cc_algorithm;
+
     let mut listeners = listen(
         [socket],
         ConnectionParams::new_server(
-            QuicSettings::default(),
+            quic_settings,
             TlsCertificatePaths {
                 cert: &args.tls_cert_path,
                 private_key: &args.tls_private_key_path,
