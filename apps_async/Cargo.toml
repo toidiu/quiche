@@ -1,0 +1,42 @@
+[package]
+name = "quiche_apps_async"
+version = "0.1.0"
+authors = ["Lucas Pardue <lucaspardue.24.7@gmail.com>"]
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+keywords = { workspace = true }
+categories = { workspace = true }
+publish = false
+
+[features]
+# Enable qlog support.
+qlog = ["quiche/qlog"]
+
+# Enable sfv support.
+sfv = ["quiche/sfv"]
+
+default = ["qlog", "sfv"]
+
+[dependencies]
+clap = { version = "4.5.40", features = ["derive"] }
+env_logger = { workspace = true }
+http = "1"
+http-body = "1"
+http-body-util = "0.1"
+quiche = { workspace = true }
+tokio-quiche = { workspace = true }
+tokio = { workspace = true, features = ["time", "test-util", "rt-multi-thread"] }
+tokio-util = { workspace = true, features = [
+  "compat",
+  "time",
+  "codec",
+  "io",
+  "rt",
+] }
+futures = { workspace = true }
+futures-util = { workspace = true }
+log = { workspace = true }
+
+[lib]
+crate-type = ["lib"]

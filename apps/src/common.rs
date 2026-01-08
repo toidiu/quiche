@@ -51,8 +51,8 @@ use quiche::ConnectionId;
 use quiche::h3::NameValue;
 use quiche::h3::Priority;
 
-pub fn stdout_sink(out: String) {
-    print!("{out}");
+pub fn stdout_sink(_out: String) {
+    // print!("{out}");
 }
 
 const H3_MESSAGE_ERROR: u64 = 0x10E;

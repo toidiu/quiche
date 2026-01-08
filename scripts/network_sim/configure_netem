@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+source scripts/network_sim/common
+
+# ========= args
+LATENCY="${1:-50ms}"
+
+LOSSMODEL="random 0%"
+# set limit to "infinite"
+LIMIT="1000000"
+# ========= args
+
+ip netns exec $NS_M2 tc qdisc add dev $VETH_M2_M3 root handle 1: netem limit $LIMIT delay $LATENCY loss $LOSSMODEL
+ip netns exec $NS_M2 tc qdisc add dev $VETH_M2_M1 root handle 1: netem limit $LIMIT delay $LATENCY loss $LOSSMODEL
